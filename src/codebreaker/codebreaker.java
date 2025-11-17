@@ -1,84 +1,88 @@
 package codebreaker;
-import java.util.Scanner; // Scanner is input for console 
+
+import java.util.Scanner;
 
 public class codebreaker {
-
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
-		String colors []= {"Red", "Green", "Yellow", "Orange", "Purple", "Blue", "Space"};
-		String answer []= new String [4];
+		String colors[] = { "red", "green", "orange", "yellow", "purple", "blue" };
+		String[] answer = new String[4];
 		boolean gameOver = false;
-		int loop = 0; // Loop worth
-		int turn = 0; // Who's turn it is
-		
-		while (loop<4) {
-			int rand = (int) (Math.random() * 7); // Math.random for random number from String colors
-			answer[loop] = colors[rand];
-			System.out.println(answer[loop]);
-			loop++;
+		int turn = 1;
+
+		// loop for filling up answer with random color
+		for (int i = 0; i < 4; i++) {
+			int rand = (int) (Math.random() * 6);
+			answer[i] = colors[rand];
 		}
-		
-		while (!gameOver && turn<10) { //gameOver false = game started. && = AND, turn lower than 10
-			if (turn == 0){ 
-				System.out.println("Each round you get 4 hints: 'zwart' means you have a correct color in the correct position, 'wit' means you have a correct color in the wrong position and 'null' means that color is not in the sequence.");
-				System.out.println("Welcome to Mastermind!");
+
+		//System.out.println(answer[0] + answer[1] + answer[2] + answer[3]); // prints out answers for me to test the game
+
+		//explanations game
+		System.out.println("---------------------------------------------------------------------------------------------------------------------------");
+		System.out.println("Welcome to Mastermind! (made by Owen Kuster)");												
+		System.out.println("Each round you get 2 hints: 'Black' meaning you have the correct place 'White' meaning correct color in the wrong place!");
+		System.out.println("You can choose from the colors: Red, Green, Yellow, Orange, Purple, Blue");
+		System.out.println("---------------------------------------------------------------------------------------------------------------------------");
+		System.out.println(" ");
+		System.out.println("<---- GUESS THE CODE ---->");
+
+		//loop for turns until turn 11
+		while (!gameOver && turn < 11) {
+			System.out.println("Choose 4 colors seperated by a space (spacebar)");
+			System.out.println("This is turn " + turn);
+			String input = scanner.nextLine();
+			String[] guess = input.trim().split(" ");
+
+			// length of the array guess, if not skip rest code, repeat
+			if (guess.length != 4) {
+				System.out.println("Please enter 4 colors");
+				continue;
 			}
-			
-			System.out.println( "Chose 4 colors (seperated by a space)");
-			String input = scanner.nextLine(); // For an input on the next line
-			String[] inputColors = input.split(" "); // the space is that it knows that there is a split
-			
-			String result1, result2, result3, result4;
-			
-			if (inputColors[0].equalsIgnoreCase(answer[0])) { // Equals is =
-                result1 = "zwart"; // if yes it says black
-            } else if (inputColors[0].equalsIgnoreCase(answer[1]) || inputColors[0].equalsIgnoreCase(answer[2]) || inputColors[0].equalsIgnoreCase(answer[3])) { // inputColors check answer is in 1-3
-                result1 = "wit"; // if yes it says white
-            } else {
-                result1 = "null";
-            }
 
-            if (inputColors[1].equalsIgnoreCase(answer[1])) {
-                result2 = "zwart";
-            } else if (inputColors[1].equalsIgnoreCase(answer[0]) || inputColors[1].equalsIgnoreCase(answer[2]) || inputColors[1].equalsIgnoreCase(answer[3])) { // || = OF
-                result2 = "wit";
-            } else {
-                result2 = "null";
-            }
-
-            if (inputColors[2].equalsIgnoreCase(answer[2])) {
-                result3 = "zwart";
-            } else if (inputColors[2].equalsIgnoreCase(answer[0]) || inputColors[2].equalsIgnoreCase(answer[1]) || inputColors[2].equalsIgnoreCase(answer[3])) {
-                result3 = "wit";
-            } else {
-                result3 = "null";
-            }
-
-            if (inputColors[3].equalsIgnoreCase(answer[3])) {
-                result4 = "zwart";
-            } else if (inputColors[3].equalsIgnoreCase(answer[0]) || inputColors[3].equalsIgnoreCase(answer[1]) || inputColors[3].equalsIgnoreCase(answer[2])) {
-                result4 = "wit";
-            } else {
-                result4 = "null";
-            }
-            
-            if (answer[0].equalsIgnoreCase(inputColors[0]) && answer[1].equalsIgnoreCase(inputColors[1]) && answer[2].equalsIgnoreCase(inputColors[2]) && answer[3].equalsIgnoreCase(inputColors[3])) { //checks answer
-                System.out.println("Congratulations! You've guessed the correct sequence!"); // if yes. shows win
-                gameOver = true; // game = done
-            } else if (turn == 9) { // checks turns
-                System.out.println("Game Over! you've used all your turns. The correct sequence was: " + answer[0] + " " + answer[1] + " " + answer[2] + " " + answer[3]); // says loss. shows answer
-                gameOver = true; 
-            } else {
-            	System.out.println("Incorrect guess. Try again. here are your hints: "+result1 + " " + result2 + " " + result3 + " " + result4); // show hint (black and white)
-            }
-			
-			turn++; // Plus a Turn until 10 
-			
+			// black check with for loop for each place
+			int black = 0;
+			boolean[] answerMatched = new boolean[4]; // checks if the position is correct array van boolean false, false, false, false
+			boolean[] guessMatched = new boolean[4]; // checks if the position is correct array van boolean false, false, false, false
+			for (int i = 0; i < 4; i++) {
+				if (guess[i].equalsIgnoreCase(answer[i])) {
+					black++;
+					answerMatched[i] = true;
+					guessMatched[i] = true; 
+					System.out.println("Number " + (i + 1) + " " + guess[i] + " is black");
+				}
+			}
+			// white check with for loop for each place
+			int white = 0;
+			for (int i = 0; i < 4; i++) {
+				boolean foundColor = false;
+				if (!guessMatched[i]) {
+					for (int j = 0; j < 4; j++) { // repeats 4 times if guess is in position j
+						if (!answerMatched[j] && guess[i].equalsIgnoreCase(answer[j])) { // if answerMatched is not in the sequence it checks if guess contains answer j
+							white++;
+							answerMatched[j] = true;
+							System.out.println("Number " + (i + 1) + " " + guess[i] + " is white");
+							foundColor = true;
+						}
+					}
+					// none check
+					if (!foundColor) {
+						System.out.println("Number " + (i + 1) + " " + guess[i] + " is none");
+					}
+				}
+			}
+			turn++;
+			// win check and loss check
+			if (black == 4) {
+				System.out.println("<----You have guessed the correct sequence---->");
+				gameOver = true; 
+			} else if (turn >= 11) {
+				System.out.println("GAME OVER! You have used all your turns!");
+				System.out.println(
+						"The correct sequence was: " + answer[0] + " " + answer[1] + " " + answer[2] + " " + answer[3]);
+			}
 		}
-		scanner.close(); // Close Scanner input 
-		
-		
+		scanner.close();
 
 	}
-
 }
